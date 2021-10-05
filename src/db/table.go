@@ -9,7 +9,6 @@ func SelectChatMessage(ip string) (chatMessage []*model.ChatMessage, err error) 
 
 	chatMessage = make([]*model.ChatMessage, 0)
 	err = exeDB.Where(map[string]interface{}{"ip": ip}).Find(&chatMessage).Error
-
 	return
 }
 
@@ -18,7 +17,6 @@ func SelectAllChatMessage() (chatMessage []*model.ChatMessage, err error) {
 
 	chatMessage = make([]*model.ChatMessage, 0)
 	err = exeDB.Find(&chatMessage).Error
-
 	return
 }
 
@@ -26,7 +24,6 @@ func SelectAllChatMessage() (chatMessage []*model.ChatMessage, err error) {
 func CreateChatMessage(chatMessage *model.ChatMessage) (err error) {
 
 	err = exeDB.Create(&chatMessage).Error
-
 	return
 }
 
@@ -35,7 +32,6 @@ func SelectFirstReply() (firstReply *model.FirstReply, err error) {
 
 	firstReply = new(model.FirstReply)
 	err = exeDB.First(&firstReply).Error
-
 	return
 }
 
@@ -44,6 +40,20 @@ func SelectFirstReplyOptionMessage() (firstReplyOptionMessage []*model.FirstRepl
 
 	firstReplyOptionMessage = make([]*model.FirstReplyOptionMessage, 0)
 	err = exeDB.First(&firstReplyOptionMessage).Error
+	return
+}
 
+// 查询IP备注
+func SelectIpContentMapByIP(ip string) (ipContentMap *model.IpContentMap, err error) {
+
+	ipContentMap = new(model.IpContentMap)
+	err = exeDB.Where(map[string]interface{}{"ip": ip}).First(&ipContentMap).Error
+	return
+}
+
+// 更新IP备注
+func SaveIpContentMap(ipContentMap *model.IpContentMap) (err error) {
+
+	err = exeDB.Save(&ipContentMap).Error
 	return
 }

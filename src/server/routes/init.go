@@ -15,6 +15,7 @@ func Init(ConfigYaml model.ConfigYaml) *gin.Engine {
 	Controller := new(controller.Controller)
 	Controller.ConfigYaml = ConfigYaml
 	router.POST("/Chat/ShowChatMessage", Controller.ShowChatMessage)
+	router.POST("/Chat/UpdateIpContentMap", Controller.UpdateIpContentMap)
 
 	return router
 }

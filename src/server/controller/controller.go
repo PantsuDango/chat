@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"github.com/jinzhu/gorm"
 	"log"
 )
 
@@ -110,4 +111,44 @@ func (controller Controller) ShowChatMessage(ctx *gin.Context) {
 	}
 
 	JSONSuccess(ctx, result)
+}
+
+// 修改IP备注
+func (controller Controller) UpdateIpContentMap(ctx *gin.Context) {
+
+	// 校验请求参数
+	var UpdateIpContentMapParams model.UpdateIpContentMapParams
+	if err := ctx.ShouldBindBodyWith(&UpdateIpContentMapParams, binding.JSON); err != nil {
+		JSONFail(ctx, IllegalRequestParams, fmt.Sprintf(`%s: %s`, RequestParamsErrMessage, err.Error()))
+		log.Println(fmt.Sprintf(`%s: %s`, RequestParamsErrMessage, err.Error()))
+		return
+	}
+
+	// 校验IP地址
+	err := CheckIP(UpdateIpContentMapParams.IP)
+	if err != nil {
+		JSONFail(ctx, IpAnalysisError, err.Error())
+		return
+	}
+
+	// 查询IP备注
+	ipContentMap, err := db.SelectIpContentMapByIP(UpdateIpContentMapParams.IP)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		JSONFail(ctx, OperationDBError, fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+		log.Println(fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+		return
+	} else if err == gorm.ErrRecordNotFound {
+		ipContentMap.IP = UpdateIpContentMapParams.IP
+	}
+
+	// 更新IP备注
+	ipContentMap.Content = UpdateIpContentMapParams.IpContent
+	err = db.SaveIpContentMap(ipContentMap)
+	if err != nil {
+		JSONFail(ctx, OperationDBError, fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+		log.Println(fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+		return
+	}
+
+	JSONSuccess(ctx, SuccessMessage)
 }

@@ -37,3 +37,15 @@ type FirstReplyOptionMessage struct {
 func (FirstReplyOptionMessage) TableName() string {
 	return "first_reply_option_message"
 }
+
+type IpContentMap struct {
+	ID        int       `json:"ID"          gorm:"column:id"`
+	IP        string    `json:"IP"          gorm:"column:ip"`
+	Content   string    `json:"Content"     gorm:"column:content"`
+	CreatedAt time.Time `json:"CreateTime"  gorm:"column:createtime"`
+	UpdatedAt time.Time `json:"UpdateTime"  gorm:"column:lastupdate"`
+}
+
+func (IpContentMap) TableName() string {
+	return "ip_content_map"
+}
