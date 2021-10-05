@@ -8,7 +8,7 @@ type ChatMessage struct {
 	Message     string    `json:"Message"     gorm:"column:message"`
 	MessageType string    `json:"MessageType" gorm:"column:message_type"`
 	CreatedAt   time.Time `json:"-"           gorm:"column:createtime"`
-	CreateTime  string    `json:"CreateTime"  gorm:"column:createtime"`
+	CreateTime  string    `json:"CreateTime"  gorm:"-"`
 }
 
 func (ChatMessage) TableName() string {

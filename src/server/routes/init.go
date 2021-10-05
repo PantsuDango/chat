@@ -18,6 +18,7 @@ func Init(ConfigYaml model.ConfigYaml) *gin.Engine {
 	router.POST("/Chat/ShowChatIPList", Controller.ShowChatIPList)
 	router.POST("/Chat/UpdateIpContentMap", Controller.UpdateIpContentMap)
 	router.POST("/Chat/SelectIpContentMap", Controller.SelectIpContentMap)
+	router.POST("/Chat/SendChatMessage", Controller.SendChatMessage)
 
 	return router
 }

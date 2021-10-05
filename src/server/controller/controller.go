@@ -225,22 +225,46 @@ func (controller Controller) SelectIpContentMap(ctx *gin.Context) {
 	JSONSuccess(ctx, ipContentMap)
 }
 
-//// 发送聊天消息
-//func (controller Controller) SendChatMessage(ctx *gin.Context) {
-//
-//	// 校验请求参数
-//	var SendChatMessageParams model.SendChatMessageParams
-//	if err := ctx.ShouldBindBodyWith(&SendChatMessageParams, binding.JSON); err != nil {
-//		JSONFail(ctx, IllegalRequestParams, fmt.Sprintf(`%s: %s`, RequestParamsErrMessage, err.Error()))
-//		log.Println(fmt.Sprintf(`%s: %s`, RequestParamsErrMessage, err.Error()))
-//		return
-//	}
-//
-//	switch SendChatMessageParams.MessageType {
-//	case "First", "Option", "Manual", "Keyword", "Customer":
-//	default:
-//		JSONFail(ctx, IllegalRequestParams, fmt.Sprintf(`%s: %s`, RequestParamsErrMessage, err.Error()))
-//		log.Println(fmt.Sprintf(`%s: %s`, RequestParamsErrMessage, err.Error()))
-//		return
-//	}
-//}
+// 发送聊天消息
+func (controller Controller) SendChatMessage(ctx *gin.Context) {
+
+	// 校验请求参数
+	var SendChatMessageParams model.SendChatMessageParams
+	if err := ctx.ShouldBindBodyWith(&SendChatMessageParams, binding.JSON); err != nil {
+		JSONFail(ctx, IllegalRequestParams, fmt.Sprintf(`%s: %s`, RequestParamsErrMessage, err.Error()))
+		log.Println(fmt.Sprintf(`%s: %s`, RequestParamsErrMessage, err.Error()))
+		return
+	}
+
+	switch SendChatMessageParams.MessageType {
+	case MessageTypeOption, MessageTypeManual, MessageTypeCustomer:
+	default:
+		JSONFail(ctx, IllegalRequestParams, fmt.Sprintf(`%s`, RequestParamsErrMessage))
+		log.Println(fmt.Sprintf(`%s`, RequestParamsErrMessage))
+		return
+	}
+
+	chatMessage := new(model.ChatMessage)
+	chatMessage.Message = SendChatMessageParams.Message
+	chatMessage.MessageType = SendChatMessageParams.MessageType
+	if SendChatMessageParams.MessageType == MessageTypeCustomer {
+		chatMessage.IP = ctx.ClientIP()
+	} else {
+		chatMessage.IP = SendChatMessageParams.IP
+	}
+	// 校验IP地址
+	err := CheckIP(chatMessage.IP)
+	if err != nil {
+		JSONFail(ctx, IpAnalysisError, err.Error())
+		return
+	}
+	// 保存聊天消息
+	err = db.CreateChatMessage(chatMessage)
+	if err != nil {
+		JSONFail(ctx, OperationDBError, fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+		log.Println(fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+		return
+	}
+
+	JSONSuccess(ctx, SuccessMessage)
+}
