@@ -1,8 +1,8 @@
 package controller
 
 import (
-	db2 "chat/src/db"
-	model2 "chat/src/model"
+	"chat/src/db"
+	"chat/src/model"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -10,14 +10,14 @@ import (
 )
 
 type Controller struct {
-	ConfigYaml model2.ConfigYaml
+	ConfigYaml model.ConfigYaml
 }
 
 // 查询聊天消息记录
 func (controller Controller) ShowChatMessage(ctx *gin.Context) {
 
 	// 校验请求参数
-	var ShowChatMessageParams model2.ShowChatMessageParams
+	var ShowChatMessageParams model.ShowChatMessageParams
 	if err := ctx.ShouldBindBodyWith(&ShowChatMessageParams, binding.JSON); err != nil {
 		JSONFail(ctx, IllegalRequestParams, fmt.Sprintf(`%s: %s`, RequestParamsErrMessage, err.Error()))
 		log.Println(fmt.Sprintf(`%s: %s`, RequestParamsErrMessage, err.Error()))
@@ -25,12 +25,12 @@ func (controller Controller) ShowChatMessage(ctx *gin.Context) {
 	}
 
 	var err error
-	chatMessage := make([]*model2.ChatMessage, 0)
+	chatMessage := make([]*model.ChatMessage, 0)
 
 	switch ShowChatMessageParams.UserType {
 	case "Admin":
 		// 查询聊天消息记录
-		chatMessage, err = db2.SelectAllChatMessage()
+		chatMessage, err = db.SelectAllChatMessage()
 		if err != nil {
 			JSONFail(ctx, OperationDBError, fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
 			log.Println(fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
@@ -45,28 +45,28 @@ func (controller Controller) ShowChatMessage(ctx *gin.Context) {
 			return
 		}
 		// 查询聊天消息记录
-		chatMessage, err = db2.SelectChatMessage(ip)
+		chatMessage, err = db.SelectChatMessage(ip)
 		if err != nil {
 			JSONFail(ctx, OperationDBError, fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
 			log.Println(fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
 			return
 		}
 
-		firstReply := new(model2.FirstReply)
+		firstReply := new(model.FirstReply)
 		if len(chatMessage) == 0 {
 			// 查询首次回复设置
-			firstReply, err = db2.SelectFirstReply()
+			firstReply, err = db.SelectFirstReply()
 			if err != nil {
 				JSONFail(ctx, OperationDBError, fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
 				log.Println(fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
 				return
 			}
 			// 创建首次回复消息
-			newChatMessage := new(model2.ChatMessage)
+			newChatMessage := new(model.ChatMessage)
 			newChatMessage.IP = ip
 			newChatMessage.Message = firstReply.Message
 			newChatMessage.MessageType = MessageTypeFirst
-			err = db2.CreateChatMessage(newChatMessage)
+			err = db.CreateChatMessage(newChatMessage)
 			if err != nil {
 				JSONFail(ctx, OperationDBError, fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
 				log.Println(fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
@@ -80,27 +80,27 @@ func (controller Controller) ShowChatMessage(ctx *gin.Context) {
 	}
 
 	// 构建返回包
-	result := make(map[string][]model2.ChatMessageInfo)
+	result := make(map[string][]model.ChatMessageInfo)
 	for _, val := range chatMessage {
 		_, ok := result[val.IP]
 		if !ok {
-			result[val.IP] = make([]model2.ChatMessageInfo, 0)
+			result[val.IP] = make([]model.ChatMessageInfo, 0)
 		}
-		chatMessageInfo := model2.ChatMessageInfo{}
+		chatMessageInfo := model.ChatMessageInfo{}
 		chatMessageInfo.Message = val.Message
 		chatMessageInfo.MessageType = val.MessageType
 		chatMessageInfo.CreateTime = val.CreatedAt.Format(TimeFormat)
-		chatMessageInfo.OptionInfo = make([]model2.OptionInfo, 0)
+		chatMessageInfo.OptionInfo = make([]model.OptionInfo, 0)
 		if val.MessageType == MessageTypeFirst {
 			// 查询首次回复选项信息
-			firstReplyOptionMessage, err := db2.SelectFirstReplyOptionMessage()
+			firstReplyOptionMessage, err := db.SelectFirstReplyOptionMessage()
 			if err != nil {
 				JSONFail(ctx, OperationDBError, fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
 				log.Println(fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
 				return
 			}
 			for _, tmp := range firstReplyOptionMessage {
-				optionInfo := model2.OptionInfo{}
+				optionInfo := model.OptionInfo{}
 				optionInfo.Option = tmp.Option
 				optionInfo.Content = tmp.Content
 				chatMessageInfo.OptionInfo = append(chatMessageInfo.OptionInfo, optionInfo)

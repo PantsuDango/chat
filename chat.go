@@ -1,25 +1,25 @@
 package main
 
 import (
-	common2 "chat/src/common"
-	db2 "chat/src/db"
-	model2 "chat/src/model"
-	routes2 "chat/src/server/routes"
+	"chat/src/common"
+	"chat/src/db"
+	"chat/src/model"
+	"chat/src/server/routes"
 	"log"
 )
 
-var ConfigYaml model2.ConfigYaml
+var ConfigYaml model.ConfigYaml
 
 func main() {
 
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
-	ConfigYaml = common2.ReadConfig()
+	ConfigYaml = common.ReadConfig()
 
-	db2.OpenDB(ConfigYaml)
-	defer db2.CloseDB()
+	db.OpenDB(ConfigYaml)
+	defer db.CloseDB()
 
-	router := routes2.Init(ConfigYaml)
+	router := routes.Init(ConfigYaml)
 	err := router.Run(":" + ConfigYaml.Server.Port)
 	if err != nil {
 		log.Fatalf("Server run fail: %s", err)

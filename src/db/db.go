@@ -1,7 +1,7 @@
 package db
 
 import (
-	model2 "chat/src/model"
+	"chat/src/model"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
@@ -11,7 +11,7 @@ import (
 var exeDB *gorm.DB
 
 // 连接数据库
-func OpenDB(ConfigYaml model2.ConfigYaml) {
+func OpenDB(ConfigYaml model.ConfigYaml) {
 
 	ip := ConfigYaml.Mysql.IP
 	port := ConfigYaml.Mysql.Port
