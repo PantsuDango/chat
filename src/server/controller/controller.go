@@ -30,8 +30,20 @@ func (controller Controller) ShowChatMessage(ctx *gin.Context) {
 
 	switch ShowChatMessageParams.UserType {
 	case "Admin":
-		// 查询聊天消息记录
-		chatMessage, err = db.SelectAllChatMessage()
+		// 校验IP地址
+		ip := ShowChatMessageParams.IP
+		if len(ip) != 0 {
+			err = CheckIP(ip)
+			if err != nil {
+				JSONFail(ctx, IpAnalysisError, err.Error())
+				return
+			}
+			// 查询聊天消息记录
+			chatMessage, err = db.SelectChatMessage(ip)
+		} else {
+			// 查询聊天消息记录
+			chatMessage, err = db.SelectAllChatMessage()
+		}
 		if err != nil {
 			JSONFail(ctx, OperationDBError, fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
 			log.Println(fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
