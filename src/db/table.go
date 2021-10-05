@@ -13,7 +13,7 @@ const (
 func SelectChatMessage(ip string) (chatMessage []*model.ChatMessage, err error) {
 
 	now := time.Now()
-	dd, _ := time.ParseDuration("-24h")
+	dd, _ := time.ParseDuration("-168h")
 	end := now.Format(TimeFormat)
 	start := now.Add(dd)
 
@@ -27,7 +27,7 @@ func SelectChatMessage(ip string) (chatMessage []*model.ChatMessage, err error) 
 func SelectAllChatMessage() (chatMessage []*model.ChatMessage, err error) {
 
 	now := time.Now()
-	dd, _ := time.ParseDuration("-24h")
+	dd, _ := time.ParseDuration("-168h")
 	end := now.Format(TimeFormat)
 	start := now.Add(dd)
 
@@ -41,12 +41,12 @@ func SelectAllChatMessage() (chatMessage []*model.ChatMessage, err error) {
 func SelectAllChatMessageIP() (chatMessage []*model.ChatMessage, err error) {
 
 	now := time.Now()
-	dd, _ := time.ParseDuration("-24h")
+	dd, _ := time.ParseDuration("-168h")
 	end := now.Format(TimeFormat)
 	start := now.Add(dd)
 
 	chatMessage = make([]*model.ChatMessage, 0)
-	err = exeDB.Where(`createtime between ? and ?`, start, end).Order(`createtime desc`).Group(`ip`).Find(&chatMessage).Error
+	err = exeDB.Where(`createtime between ? and ?`, start, end).Order(`createtime desc`).Find(&chatMessage).Error
 
 	return
 }

@@ -137,8 +137,14 @@ func (controller Controller) ShowChatIPList(ctx *gin.Context) {
 	}
 
 	// 构建返回包
+	tmpMap := make(map[string]string)
 	result := make([]*model.ChatMessageIPListInfo, 0)
 	for _, val := range chatMessage {
+		if _, ok := tmpMap[val.IP]; !ok {
+			tmpMap[val.IP] = val.IP
+		} else {
+			continue
+		}
 		chatMessageInfo := new(model.ChatMessageIPListInfo)
 		chatMessageInfo.IP = val.IP
 		chatMessageInfo.Message = val.Message

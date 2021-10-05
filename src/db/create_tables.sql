@@ -9,7 +9,7 @@ CREATE TABLE `chat_message` (
     `message_type` enum('First', 'Option', 'Manual', 'Keyword', 'Customer') NOT NULL COMMENT '消息类型: 首次/质保/人工/关键词/客户',
     `createtime` datetime NOT NULL COMMENT '创建时间',
     PRIMARY KEY (`id`),
-    UNIQUE KEY (`ip`),
+    KEY (`ip`),
     KEY (`ip`, `createtime`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='聊天消息记录表';
 
