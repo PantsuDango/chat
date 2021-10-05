@@ -2,21 +2,38 @@ package db
 
 import (
 	"chat/src/model"
+	"time"
+)
+
+const (
+	TimeFormat = "2006-01-02 15:04:05"
 )
 
 // 查询聊天消息记录
 func SelectChatMessage(ip string) (chatMessage []*model.ChatMessage, err error) {
 
+	now := time.Now()
+	dd, _ := time.ParseDuration("-24h")
+	end := now.Format(TimeFormat)
+	start := now.Add(dd)
+
 	chatMessage = make([]*model.ChatMessage, 0)
-	err = exeDB.Where(map[string]interface{}{"ip": ip}).Find(&chatMessage).Error
+	err = exeDB.Where(`ip = ? and createtime between ? and ?`, ip, start, end).Find(&chatMessage).Error
+
 	return
 }
 
 // 查询聊天消息记录
 func SelectAllChatMessage() (chatMessage []*model.ChatMessage, err error) {
 
+	now := time.Now()
+	dd, _ := time.ParseDuration("-24h")
+	end := now.Format(TimeFormat)
+	start := now.Add(dd)
+
 	chatMessage = make([]*model.ChatMessage, 0)
-	err = exeDB.Find(&chatMessage).Error
+	err = exeDB.Where(`createtime between ? and ?`, start, end).Find(&chatMessage).Error
+
 	return
 }
 
