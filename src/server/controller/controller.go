@@ -136,11 +136,34 @@ func (controller Controller) ShowChatIPList(ctx *gin.Context) {
 		return
 	}
 
-	for index, _ := range chatMessage {
-		chatMessage[index].CreateTime = chatMessage[index].CreatedAt.Format(TimeFormat)
+	// 构建返回包
+	result := make([]*model.ChatMessageIPListInfo, 0)
+	for _, val := range chatMessage {
+		chatMessageInfo := new(model.ChatMessageIPListInfo)
+		chatMessageInfo.IP = val.IP
+		chatMessageInfo.Message = val.Message
+		chatMessageInfo.MessageType = val.MessageType
+		chatMessageInfo.CreateTime = val.CreatedAt.Format(TimeFormat)
+		chatMessageInfo.OptionInfo = make([]model.OptionInfo, 0)
+		if val.MessageType == MessageTypeFirst {
+			// 查询首次回复选项信息
+			firstReplyOptionMessage, err := db.SelectFirstReplyOptionMessage()
+			if err != nil {
+				JSONFail(ctx, OperationDBError, fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+				log.Println(fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+				return
+			}
+			for _, tmp := range firstReplyOptionMessage {
+				optionInfo := model.OptionInfo{}
+				optionInfo.Option = tmp.Option
+				optionInfo.Content = tmp.Content
+				chatMessageInfo.OptionInfo = append(chatMessageInfo.OptionInfo, optionInfo)
+			}
+		}
+		result = append(result, chatMessageInfo)
 	}
 
-	JSONSuccess(ctx, chatMessage)
+	JSONSuccess(ctx, result)
 }
 
 // 修改IP备注
