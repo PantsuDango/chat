@@ -125,6 +125,24 @@ func (controller Controller) ShowChatMessage(ctx *gin.Context) {
 	JSONSuccess(ctx, result)
 }
 
+// 查询聊天消息IP列表
+func (controller Controller) ShowChatIPList(ctx *gin.Context) {
+
+	// 查询聊天消息记录
+	chatMessage, err := db.SelectAllChatMessageIP()
+	if err != nil {
+		JSONFail(ctx, OperationDBError, fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+		log.Println(fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+		return
+	}
+
+	for index, _ := range chatMessage {
+		chatMessage[index].CreateTime = chatMessage[index].CreatedAt.Format(TimeFormat)
+	}
+
+	JSONSuccess(ctx, chatMessage)
+}
+
 // 修改IP备注
 func (controller Controller) UpdateIpContentMap(ctx *gin.Context) {
 
@@ -177,3 +195,23 @@ func (controller Controller) SelectIpContentMap(ctx *gin.Context) {
 
 	JSONSuccess(ctx, ipContentMap)
 }
+
+//// 发送聊天消息
+//func (controller Controller) SendChatMessage(ctx *gin.Context) {
+//
+//	// 校验请求参数
+//	var SendChatMessageParams model.SendChatMessageParams
+//	if err := ctx.ShouldBindBodyWith(&SendChatMessageParams, binding.JSON); err != nil {
+//		JSONFail(ctx, IllegalRequestParams, fmt.Sprintf(`%s: %s`, RequestParamsErrMessage, err.Error()))
+//		log.Println(fmt.Sprintf(`%s: %s`, RequestParamsErrMessage, err.Error()))
+//		return
+//	}
+//
+//	switch SendChatMessageParams.MessageType {
+//	case "First", "Option", "Manual", "Keyword", "Customer":
+//	default:
+//		JSONFail(ctx, IllegalRequestParams, fmt.Sprintf(`%s: %s`, RequestParamsErrMessage, err.Error()))
+//		log.Println(fmt.Sprintf(`%s: %s`, RequestParamsErrMessage, err.Error()))
+//		return
+//	}
+//}

@@ -37,6 +37,20 @@ func SelectAllChatMessage() (chatMessage []*model.ChatMessage, err error) {
 	return
 }
 
+// 查询聊天消息记录
+func SelectAllChatMessageIP() (chatMessage []*model.ChatMessage, err error) {
+
+	now := time.Now()
+	dd, _ := time.ParseDuration("-24h")
+	end := now.Format(TimeFormat)
+	start := now.Add(dd)
+
+	chatMessage = make([]*model.ChatMessage, 0)
+	err = exeDB.Where(`createtime between ? and ?`, start, end).Order(`createtime desc`).Group(`ip`).Find(&chatMessage).Error
+
+	return
+}
+
 // 创建聊天消息记录
 func CreateChatMessage(chatMessage *model.ChatMessage) (err error) {
 

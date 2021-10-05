@@ -3,11 +3,12 @@ package model
 import "time"
 
 type ChatMessage struct {
-	ID          int       `json:"ID"          gorm:"column:id"`
+	ID          int       `json:"-"           gorm:"column:id"`
 	IP          string    `json:"IP"          gorm:"column:ip"`
 	Message     string    `json:"Message"     gorm:"column:message"`
 	MessageType string    `json:"MessageType" gorm:"column:message_type"`
-	CreatedAt   time.Time `json:"CreateTime"  gorm:"column:createtime"`
+	CreatedAt   time.Time `json:"-"           gorm:"column:createtime"`
+	CreateTime  string    `json:"CreateTime"  gorm:"column:createtime"`
 }
 
 func (ChatMessage) TableName() string {
