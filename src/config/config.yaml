@@ -1,0 +1,9 @@
+Mysql:
+  IP: 39.108.110.77
+  Port: 3306
+  User: root
+  Password: 121031
+  Database: chat_db
+
+Server:
+  Port: 23333
