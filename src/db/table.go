@@ -57,3 +57,10 @@ func SaveIpContentMap(ipContentMap *model.IpContentMap) (err error) {
 	err = exeDB.Save(&ipContentMap).Error
 	return
 }
+
+// 查询IP备注
+func SelectIpContentMap() (ipContentMap []*model.IpContentMap, err error) {
+
+	err = exeDB.Find(&ipContentMap).Error
+	return
+}

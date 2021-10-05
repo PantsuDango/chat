@@ -152,3 +152,16 @@ func (controller Controller) UpdateIpContentMap(ctx *gin.Context) {
 
 	JSONSuccess(ctx, SuccessMessage)
 }
+
+// 查询IP备注
+func (controller Controller) SelectIpContentMap(ctx *gin.Context) {
+
+	ipContentMap, err := db.SelectIpContentMap()
+	if err != nil {
+		JSONFail(ctx, OperationDBError, fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+		log.Println(fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+		return
+	}
+
+	JSONSuccess(ctx, ipContentMap)
+}
