@@ -20,3 +20,11 @@ type ChatMessageIPListInfo struct {
 	CreateTime  string       `json:"CreateTime"`
 	OptionInfo  []OptionInfo `json:"OptionInfo"`
 }
+
+type ShowKeywordRule struct {
+	ID       int      `json:"ID"`
+	RuleName string   `json:"RuleName"`
+	Switch   int      `json:"Switch"`
+	Content  string   `json:"Content"`
+	Keyword  []string `json:"Keyword"`
+}

@@ -369,3 +369,38 @@ func (controller Controller) UpdateKeywordRule(ctx *gin.Context) {
 
 	JSONSuccess(ctx, SuccessMessage)
 }
+
+// 查询关键词规则
+func (controller Controller) ShowKeywordRule(ctx *gin.Context) {
+
+	// 查询关键词规则
+	keywordRule, err := db.SelectKeywordRule()
+	if err != nil {
+		JSONFail(ctx, OperationDBError, fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+		log.Println(fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+		return
+	}
+
+	result := make([]model.ShowKeywordRule, 0)
+	for _, val := range keywordRule {
+		showKeywordRule := model.ShowKeywordRule{}
+		showKeywordRule.ID = val.ID
+		showKeywordRule.RuleName = val.RuleName
+		showKeywordRule.Switch = val.Switch
+		showKeywordRule.Content = val.Content
+		// 查询关键词
+		keywordRuleMap, err := db.SelectKeywordRuleMapByRuleName(val.RuleName)
+		if err != nil {
+			JSONFail(ctx, OperationDBError, fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+			log.Println(fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+			return
+		}
+		showKeywordRule.Keyword = make([]string, 0)
+		for _, tmp := range keywordRuleMap {
+			showKeywordRule.Keyword = append(showKeywordRule.Keyword, tmp.Content)
+		}
+		result = append(result, showKeywordRule)
+	}
+
+	JSONSuccess(ctx, result)
+}

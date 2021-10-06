@@ -111,6 +111,14 @@ func SelectKeywordRuleByRuleName(ruleName string) (keywordRule *model.KeywordRul
 	return
 }
 
+// 查询关键词规则
+func SelectKeywordRule() (keywordRule []*model.KeywordRule, err error) {
+
+	keywordRule = make([]*model.KeywordRule, 0)
+	err = exeDB.Order(`lastupdate desc`).Find(&keywordRule).Error
+	return
+}
+
 // 更新关键词规则
 func SaveKeywordRule(keywordRule *model.KeywordRule) (err error) {
 
@@ -129,5 +137,13 @@ func CreateKeywordRuleMap(keywordRuleMap *model.KeywordRuleMap) (err error) {
 func DeleteKeywordRuleMapByRuleName(ruleName string) (err error) {
 
 	err = exeDB.Where(map[string]interface{}{"rule_name": ruleName}).Delete(&model.KeywordRuleMap{}).Error
+	return
+}
+
+// 查询规则与关键词映射
+func SelectKeywordRuleMapByRuleName(ruleName string) (keywordRuleMap []*model.KeywordRuleMap, err error) {
+
+	keywordRuleMap = make([]*model.KeywordRuleMap, 0)
+	err = exeDB.Where(map[string]interface{}{"rule_name": ruleName}).Find(&keywordRuleMap).Error
 	return
 }
