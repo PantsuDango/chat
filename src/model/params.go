@@ -15,3 +15,9 @@ type SendChatMessageParams struct {
 	Message     string `json:"Message"     binding:"required"`
 	MessageType string `json:"MessageType" binding:"required"`
 }
+
+type AddKeywordRuleParams struct {
+	RuleName string   `json:"RuleName" binding:"required"`
+	Keyword  []string `json:"Keyword"  binding:"required"`
+	Content  string   `json:"Content"  binding:"required"`
+}

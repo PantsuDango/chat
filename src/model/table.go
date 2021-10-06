@@ -50,3 +50,27 @@ type IpContentMap struct {
 func (IpContentMap) TableName() string {
 	return "ip_content_map"
 }
+
+type KeywordRule struct {
+	ID        int       `json:"ID"          gorm:"column:id"`
+	RuleName  string    `json:"RuleName"    gorm:"column:rule_name"`
+	Switch    int       `json:"Switch"      gorm:"column:switch"`
+	Content   string    `json:"Content"     gorm:"column:content"`
+	CreatedAt time.Time `json:"CreateTime"  gorm:"column:createtime"`
+	UpdatedAt time.Time `json:"UpdateTime"  gorm:"column:lastupdate"`
+}
+
+func (KeywordRule) TableName() string {
+	return "keyword_rule"
+}
+
+type KeywordRuleMap struct {
+	ID        int       `json:"ID"          gorm:"column:id"`
+	RuleName  string    `json:"RuleName"    gorm:"column:rule_name"`
+	Content   string    `json:"Content"     gorm:"column:content"`
+	CreatedAt time.Time `json:"CreateTime"  gorm:"column:createtime"`
+}
+
+func (KeywordRuleMap) TableName() string {
+	return "keyword_rule_map"
+}

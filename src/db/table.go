@@ -95,3 +95,17 @@ func SelectIpContentMap() (ipContentMap []*model.IpContentMap, err error) {
 	err = exeDB.Find(&ipContentMap).Error
 	return
 }
+
+// 创建关键词规则
+func CreateKeywordRule(keywordRule *model.KeywordRule) (err error) {
+
+	err = exeDB.Create(&keywordRule).Error
+	return
+}
+
+// 创建规则与关键词映射
+func CreateKeywordRuleMap(keywordRuleMap *model.KeywordRuleMap) (err error) {
+
+	err = exeDB.Create(&keywordRuleMap).Error
+	return
+}

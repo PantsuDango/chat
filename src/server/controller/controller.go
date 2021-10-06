@@ -277,3 +277,42 @@ func (controller Controller) SendChatMessage(ctx *gin.Context) {
 
 	JSONSuccess(ctx, SuccessMessage)
 }
+
+// 添加关键词规则
+func (controller Controller) AddKeywordRule(ctx *gin.Context) {
+
+	// 校验请求参数
+	var AddKeywordRuleParams model.AddKeywordRuleParams
+	if err := ctx.ShouldBindBodyWith(&AddKeywordRuleParams, binding.JSON); err != nil || len(AddKeywordRuleParams.Keyword) == 0 {
+		JSONFail(ctx, IllegalRequestParams, fmt.Sprintf(`%s: %s`, RequestParamsErrMessage, err.Error()))
+		log.Println(fmt.Sprintf(`%s: %s`, RequestParamsErrMessage, err.Error()))
+		return
+	}
+
+	keywordRule := new(model.KeywordRule)
+	keywordRule.RuleName = AddKeywordRuleParams.RuleName
+	keywordRule.Switch = 0
+	keywordRule.Content = AddKeywordRuleParams.Content
+	// 创建关键词规则
+	err := db.CreateKeywordRule(keywordRule)
+	if err != nil {
+		JSONFail(ctx, OperationDBError, fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+		log.Println(fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+		return
+	}
+
+	for _, val := range AddKeywordRuleParams.Keyword {
+		keywordRuleMap := new(model.KeywordRuleMap)
+		keywordRuleMap.RuleName = AddKeywordRuleParams.RuleName
+		keywordRuleMap.Content = val
+		// 创建关键词规则
+		err = db.CreateKeywordRuleMap(keywordRuleMap)
+		if err != nil {
+			JSONFail(ctx, OperationDBError, fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+			log.Println(fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+			return
+		}
+	}
+
+	JSONSuccess(ctx, SuccessMessage)
+}
