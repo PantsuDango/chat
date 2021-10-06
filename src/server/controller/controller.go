@@ -316,3 +316,56 @@ func (controller Controller) AddKeywordRule(ctx *gin.Context) {
 
 	JSONSuccess(ctx, SuccessMessage)
 }
+
+// 更新关键词规则
+func (controller Controller) UpdateKeywordRule(ctx *gin.Context) {
+
+	// 校验请求参数
+	var UpdateKeywordRuleParams model.UpdateKeywordRuleParams
+	if err := ctx.ShouldBindBodyWith(&UpdateKeywordRuleParams, binding.JSON); err != nil {
+		JSONFail(ctx, IllegalRequestParams, fmt.Sprintf(`%s: %s`, RequestParamsErrMessage, err.Error()))
+		log.Println(fmt.Sprintf(`%s: %s`, RequestParamsErrMessage, err.Error()))
+		return
+	}
+
+	// 查询关键词规则
+	keywordRule, err := db.SelectKeywordRuleByRuleName(UpdateKeywordRuleParams.RuleName)
+	if err != nil {
+		JSONFail(ctx, OperationDBError, fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+		log.Println(fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+		return
+	}
+
+	keywordRule.Switch = UpdateKeywordRuleParams.Switch
+	keywordRule.Content = UpdateKeywordRuleParams.Content
+	// 更新关键词规则
+	err = db.SaveKeywordRule(keywordRule)
+	if err != nil {
+		JSONFail(ctx, OperationDBError, fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+		log.Println(fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+		return
+	}
+
+	// 删除规则与关键词映射
+	err = db.DeleteKeywordRuleMapByRuleName(UpdateKeywordRuleParams.RuleName)
+	if err != nil {
+		JSONFail(ctx, OperationDBError, fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+		log.Println(fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+		return
+	}
+
+	for _, val := range UpdateKeywordRuleParams.Keyword {
+		keywordRuleMap := new(model.KeywordRuleMap)
+		keywordRuleMap.RuleName = UpdateKeywordRuleParams.RuleName
+		keywordRuleMap.Content = val
+		// 创建关键词规则
+		err = db.CreateKeywordRuleMap(keywordRuleMap)
+		if err != nil {
+			JSONFail(ctx, OperationDBError, fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+			log.Println(fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+			return
+		}
+	}
+
+	JSONSuccess(ctx, SuccessMessage)
+}

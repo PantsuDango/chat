@@ -103,9 +103,31 @@ func CreateKeywordRule(keywordRule *model.KeywordRule) (err error) {
 	return
 }
 
+// 创建关键词规则
+func SelectKeywordRuleByRuleName(ruleName string) (keywordRule *model.KeywordRule, err error) {
+
+	keywordRule = new(model.KeywordRule)
+	err = exeDB.Where(map[string]interface{}{"rule_name": ruleName}).First(&keywordRule).Error
+	return
+}
+
+// 更新关键词规则
+func SaveKeywordRule(keywordRule *model.KeywordRule) (err error) {
+
+	err = exeDB.Save(&keywordRule).Error
+	return
+}
+
 // 创建规则与关键词映射
 func CreateKeywordRuleMap(keywordRuleMap *model.KeywordRuleMap) (err error) {
 
 	err = exeDB.Create(&keywordRuleMap).Error
+	return
+}
+
+// 删除规则与关键词映射
+func DeleteKeywordRuleMapByRuleName(ruleName string) (err error) {
+
+	err = exeDB.Where(map[string]interface{}{"rule_name": ruleName}).Delete(&model.KeywordRuleMap{}).Error
 	return
 }
