@@ -166,6 +166,15 @@ func (controller Controller) ShowChatIPList(ctx *gin.Context) {
 				chatMessageInfo.OptionInfo = append(chatMessageInfo.OptionInfo, optionInfo)
 			}
 		}
+		// 查询IP备注
+		ipContentMap, err := db.SelectIpContentMapByIP(val.IP)
+		if err != nil && err != gorm.ErrRecordNotFound {
+			JSONFail(ctx, OperationDBError, fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+			log.Println(fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+			return
+		} else if err == nil {
+			chatMessageInfo.IPContent = ipContentMap.Content
+		}
 		result = append(result, chatMessageInfo)
 	}
 

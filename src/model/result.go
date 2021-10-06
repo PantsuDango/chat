@@ -14,6 +14,7 @@ type OptionInfo struct {
 
 type ChatMessageIPListInfo struct {
 	IP          string       `json:"IP"`
+	IPContent   string       `json:"IPContent"`
 	Message     string       `json:"Message"`
 	MessageType string       `json:"MessageType"`
 	CreateTime  string       `json:"CreateTime"`
