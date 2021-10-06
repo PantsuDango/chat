@@ -119,6 +119,14 @@ func SelectKeywordRule() (keywordRule []*model.KeywordRule, err error) {
 	return
 }
 
+// 查询关键词规则
+func SelectKeywordRuleBySwitch() (keywordRule []*model.KeywordRule, err error) {
+
+	keywordRule = make([]*model.KeywordRule, 0)
+	err = exeDB.Where(map[string]interface{}{"switch": 1}).Order(`lastupdate desc`).Find(&keywordRule).Error
+	return
+}
+
 // 更新关键词规则
 func SaveKeywordRule(keywordRule *model.KeywordRule) (err error) {
 

@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	"github.com/jinzhu/gorm"
 	"log"
+	"strings"
 )
 
 type Controller struct {
@@ -273,6 +274,47 @@ func (controller Controller) SendChatMessage(ctx *gin.Context) {
 		JSONFail(ctx, OperationDBError, fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
 		log.Println(fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
 		return
+	}
+
+	// 查询关键词规则
+	keywordRule, err := db.SelectKeywordRuleBySwitch()
+	if err != nil {
+		JSONFail(ctx, OperationDBError, fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+		log.Println(fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+		return
+	}
+
+	keywordMap := make(map[string]string, 0)
+	for _, val := range keywordRule {
+		// 查询关键词
+		keywordRuleMap, err := db.SelectKeywordRuleMapByRuleName(val.RuleName)
+		if err != nil {
+			JSONFail(ctx, OperationDBError, fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+			log.Println(fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+			return
+		}
+		for _, tmp := range keywordRuleMap {
+			keywordMap[tmp.Content] = val.Content
+		}
+	}
+
+	// 关键词匹配
+	for keyword, content := range keywordMap {
+		if !strings.Contains(SendChatMessageParams.Message, keyword) {
+			continue
+		}
+		autoChatMessage := new(model.ChatMessage)
+		autoChatMessage.IP = chatMessage.IP
+		autoChatMessage.Message = content
+		autoChatMessage.MessageType = MessageTypeKeyword
+		// 保存聊天消息
+		err = db.CreateChatMessage(autoChatMessage)
+		if err != nil {
+			JSONFail(ctx, OperationDBError, fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+			log.Println(fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+			return
+		}
+		break
 	}
 
 	JSONSuccess(ctx, SuccessMessage)
