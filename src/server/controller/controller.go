@@ -373,13 +373,14 @@ func (controller Controller) UpdateKeywordRule(ctx *gin.Context) {
 	}
 
 	// 查询关键词规则
-	keywordRule, err := db.SelectKeywordRuleByRuleName(UpdateKeywordRuleParams.RuleName)
+	keywordRule, err := db.SelectKeywordRuleByID(UpdateKeywordRuleParams.RuleID)
 	if err != nil {
 		JSONFail(ctx, OperationDBError, fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
 		log.Println(fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
 		return
 	}
 
+	keywordRule.RuleName = UpdateKeywordRuleParams.RuleName
 	keywordRule.Switch = UpdateKeywordRuleParams.Switch
 	keywordRule.Content = UpdateKeywordRuleParams.Content
 	// 更新关键词规则
@@ -540,3 +541,17 @@ func (controller Controller) UpdateFirstReply(ctx *gin.Context) {
 
 	JSONSuccess(ctx, SuccessMessage)
 }
+
+//// 查询首次回复
+//func (controller Controller) ShowFirstReply(ctx *gin.Context) {
+//
+//	// 查询首次回复设置
+//	firstReply, err := db.SelectFirstReply()
+//	if err != nil {
+//		JSONFail(ctx, OperationDBError, fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+//		log.Println(fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+//		return
+//	}
+//
+//
+//}

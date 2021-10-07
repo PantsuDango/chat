@@ -23,7 +23,8 @@ type AddKeywordRuleParams struct {
 }
 
 type UpdateKeywordRuleParams struct {
-	RuleName string   `json:"RuleName" binding:"required"`
+	RuleID   int      `json:"RuleID"    binding:"required"`
+	RuleName string   `json:"RuleName"`
 	Switch   int      `json:"Switch"`
 	Keyword  []string `json:"Keyword"`
 	Content  string   `json:"Content"`

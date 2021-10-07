@@ -124,11 +124,19 @@ func CreateKeywordRule(keywordRule *model.KeywordRule) (err error) {
 	return
 }
 
-// 创建关键词规则
+// 查询关键词规则
 func SelectKeywordRuleByRuleName(ruleName string) (keywordRule *model.KeywordRule, err error) {
 
 	keywordRule = new(model.KeywordRule)
 	err = exeDB.Where(map[string]interface{}{"rule_name": ruleName}).First(&keywordRule).Error
+	return
+}
+
+// 创建关键词规则
+func SelectKeywordRuleByID(id int) (keywordRule *model.KeywordRule, err error) {
+
+	keywordRule = new(model.KeywordRule)
+	err = exeDB.Where(id).First(&keywordRule).Error
 	return
 }
 
