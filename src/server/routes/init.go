@@ -22,6 +22,7 @@ func Init(ConfigYaml model.ConfigYaml) *gin.Engine {
 	router.POST("/Chat/AddKeywordRule", Controller.AddKeywordRule)
 	router.POST("/Chat/UpdateKeywordRule", Controller.UpdateKeywordRule)
 	router.POST("/Chat/ShowKeywordRule", Controller.ShowKeywordRule)
+	router.POST("/Chat/DeleteKeywordRule", Controller.DeleteKeywordRule)
 
 	return router
 }

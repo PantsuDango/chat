@@ -448,3 +448,41 @@ func (controller Controller) ShowKeywordRule(ctx *gin.Context) {
 
 	JSONSuccess(ctx, result)
 }
+
+// 删除关键词规则
+func (controller Controller) DeleteKeywordRule(ctx *gin.Context) {
+
+	// 校验请求参数
+	var DeleteKeywordRuleParams model.DeleteKeywordRuleParams
+	if err := ctx.ShouldBindBodyWith(&DeleteKeywordRuleParams, binding.JSON); err != nil {
+		JSONFail(ctx, IllegalRequestParams, fmt.Sprintf(`%s: %s`, RequestParamsErrMessage, err.Error()))
+		log.Println(fmt.Sprintf(`%s: %s`, RequestParamsErrMessage, err.Error()))
+		return
+	}
+
+	// 查询关键词规则
+	keywordRule, err := db.SelectKeywordRuleByRuleName(DeleteKeywordRuleParams.RuleName)
+	if err != nil {
+		JSONFail(ctx, OperationDBError, fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+		log.Println(fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+		return
+	}
+
+	// 删除关键词规则
+	err = db.DeleteKeywordRule(keywordRule)
+	if err != nil {
+		JSONFail(ctx, OperationDBError, fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+		log.Println(fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+		return
+	}
+
+	// 删除规则与关键词映射
+	err = db.DeleteKeywordRuleMapByRuleName(DeleteKeywordRuleParams.RuleName)
+	if err != nil {
+		JSONFail(ctx, OperationDBError, fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+		log.Println(fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+		return
+	}
+
+	JSONSuccess(ctx, SuccessMessage)
+}

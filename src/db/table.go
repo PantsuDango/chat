@@ -134,6 +134,13 @@ func SaveKeywordRule(keywordRule *model.KeywordRule) (err error) {
 	return
 }
 
+// 更新关键词规则
+func DeleteKeywordRule(keywordRule *model.KeywordRule) (err error) {
+
+	err = exeDB.Delete(&keywordRule).Error
+	return
+}
+
 // 创建规则与关键词映射
 func CreateKeywordRuleMap(keywordRuleMap *model.KeywordRuleMap) (err error) {
 

@@ -28,3 +28,7 @@ type UpdateKeywordRuleParams struct {
 	Keyword  []string `json:"Keyword"`
 	Content  string   `json:"Content"`
 }
+
+type DeleteKeywordRuleParams struct {
+	RuleName string `json:"RuleName" binding:"required"`
+}
