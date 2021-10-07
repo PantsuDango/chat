@@ -31,7 +31,7 @@ type UpdateKeywordRuleParams struct {
 }
 
 type DeleteKeywordRuleParams struct {
-	RuleName string `json:"RuleName" binding:"required"`
+	RuleID int `json:"RuleID"  binding:"required"`
 }
 
 type UpdateFirstReplyParams struct {

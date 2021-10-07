@@ -462,7 +462,7 @@ func (controller Controller) DeleteKeywordRule(ctx *gin.Context) {
 	}
 
 	// 查询关键词规则
-	keywordRule, err := db.SelectKeywordRuleByRuleName(DeleteKeywordRuleParams.RuleName)
+	keywordRule, err := db.SelectKeywordRuleByID(DeleteKeywordRuleParams.RuleID)
 	if err != nil {
 		JSONFail(ctx, OperationDBError, fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
 		log.Println(fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
@@ -478,7 +478,7 @@ func (controller Controller) DeleteKeywordRule(ctx *gin.Context) {
 	}
 
 	// 删除规则与关键词映射
-	err = db.DeleteKeywordRuleMapByRuleName(DeleteKeywordRuleParams.RuleName)
+	err = db.DeleteKeywordRuleMapByRuleName(keywordRule.RuleName)
 	if err != nil {
 		JSONFail(ctx, OperationDBError, fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
 		log.Println(fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
