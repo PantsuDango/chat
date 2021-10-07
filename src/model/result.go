@@ -28,3 +28,9 @@ type ShowKeywordRule struct {
 	Content  string   `json:"Content"`
 	Keyword  []string `json:"Keyword"`
 }
+
+type ShowFirstReply struct {
+	Message      string       `json:"Message"`
+	OptionSwitch int          `json:"OptionSwitch"`
+	OptionInfo   []OptionInfo `json:"OptionInfo"`
+}

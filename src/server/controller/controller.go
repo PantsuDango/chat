@@ -542,16 +542,36 @@ func (controller Controller) UpdateFirstReply(ctx *gin.Context) {
 	JSONSuccess(ctx, SuccessMessage)
 }
 
-//// 查询首次回复
-//func (controller Controller) ShowFirstReply(ctx *gin.Context) {
-//
-//	// 查询首次回复设置
-//	firstReply, err := db.SelectFirstReply()
-//	if err != nil {
-//		JSONFail(ctx, OperationDBError, fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
-//		log.Println(fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
-//		return
-//	}
-//
-//
-//}
+// 查询首次回复
+func (controller Controller) ShowFirstReply(ctx *gin.Context) {
+
+	// 查询首次回复设置
+	firstReply, err := db.SelectFirstReply()
+	if err != nil {
+		JSONFail(ctx, OperationDBError, fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+		log.Println(fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+		return
+	}
+
+	result := model.ShowFirstReply{}
+	result.OptionInfo = make([]model.OptionInfo, 0)
+	result.Message = firstReply.Message
+	result.OptionSwitch = firstReply.OptionSwitch
+
+	// 查询首次回复选项信息
+	firstReplyOptionMessage, err := db.SelectFirstReplyOptionMessage()
+	if err != nil {
+		JSONFail(ctx, OperationDBError, fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+		log.Println(fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+		return
+	}
+
+	for _, val := range firstReplyOptionMessage {
+		OptionInfo := model.OptionInfo{}
+		OptionInfo.Option = val.Option
+		OptionInfo.Content = val.Content
+		result.OptionInfo = append(result.OptionInfo, OptionInfo)
+	}
+
+	JSONSuccess(ctx, result)
+}
