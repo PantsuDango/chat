@@ -486,3 +486,57 @@ func (controller Controller) DeleteKeywordRule(ctx *gin.Context) {
 
 	JSONSuccess(ctx, SuccessMessage)
 }
+
+// 编辑首次回复
+func (controller Controller) UpdateFirstReply(ctx *gin.Context) {
+
+	// 校验请求参数
+	var UpdateFirstReplyParams model.UpdateFirstReplyParams
+	if err := ctx.ShouldBindBodyWith(&UpdateFirstReplyParams, binding.JSON); err != nil || (UpdateFirstReplyParams.OptionSwitch != 0 && UpdateFirstReplyParams.OptionSwitch != 1) {
+		JSONFail(ctx, IllegalRequestParams, fmt.Sprintf(`%s: %s`, RequestParamsErrMessage, err.Error()))
+		log.Println(fmt.Sprintf(`%s: %s`, RequestParamsErrMessage, err.Error()))
+		return
+	}
+
+	// 查询首次回复设置
+	firstReply, err := db.SelectFirstReply()
+	if err != nil {
+		JSONFail(ctx, OperationDBError, fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+		log.Println(fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+		return
+	}
+
+	// 更新首次回复消息
+	firstReply.Message = UpdateFirstReplyParams.Message
+	firstReply.OptionSwitch = UpdateFirstReplyParams.OptionSwitch
+	err = db.SaveFirstReply(firstReply)
+	if err != nil {
+		JSONFail(ctx, OperationDBError, fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+		log.Println(fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+		return
+	}
+
+	// 删除首次回复选项消息
+	if len(UpdateFirstReplyParams.OptionInfo) > 0 {
+		err = db.DeleteFirstReplyOptionMessage()
+		if err != nil {
+			JSONFail(ctx, OperationDBError, fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+			log.Println(fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+			return
+		}
+	}
+	// 创建首次回复选项消息
+	for _, val := range UpdateFirstReplyParams.OptionInfo {
+		firstReplyOptionMessage := new(model.FirstReplyOptionMessage)
+		firstReplyOptionMessage.Option = val.Option
+		firstReplyOptionMessage.Content = val.Content
+		err = db.CreateFirstReplyOptionMessage(firstReplyOptionMessage)
+		if err != nil {
+			JSONFail(ctx, OperationDBError, fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+			log.Println(fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+			return
+		}
+	}
+
+	JSONSuccess(ctx, SuccessMessage)
+}

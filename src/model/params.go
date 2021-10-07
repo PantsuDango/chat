@@ -32,3 +32,9 @@ type UpdateKeywordRuleParams struct {
 type DeleteKeywordRuleParams struct {
 	RuleName string `json:"RuleName" binding:"required"`
 }
+
+type UpdateFirstReplyParams struct {
+	Message      string       `json:"Message"      binding:"required"`
+	OptionSwitch int          `json:"OptionSwitch"`
+	OptionInfo   []OptionInfo `json:"OptionInfo"   binding:"required"`
+}

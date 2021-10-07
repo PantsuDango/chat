@@ -66,11 +66,32 @@ func SelectFirstReply() (firstReply *model.FirstReply, err error) {
 	return
 }
 
+// 查询首次回复设置
+func SaveFirstReply(firstReply *model.FirstReply) (err error) {
+
+	err = exeDB.Save(&firstReply).Error
+	return
+}
+
 // 查询首次回复选项信息
 func SelectFirstReplyOptionMessage() (firstReplyOptionMessage []*model.FirstReplyOptionMessage, err error) {
 
 	firstReplyOptionMessage = make([]*model.FirstReplyOptionMessage, 0)
-	err = exeDB.First(&firstReplyOptionMessage).Error
+	err = exeDB.Find(&firstReplyOptionMessage).Error
+	return
+}
+
+// 删除首次回复选项信息
+func DeleteFirstReplyOptionMessage() (err error) {
+
+	err = exeDB.Delete(&model.FirstReplyOptionMessage{}).Error
+	return
+}
+
+// 创建首次回复选项信息
+func CreateFirstReplyOptionMessage(firstReplyOptionMessage *model.FirstReplyOptionMessage) (err error) {
+
+	err = exeDB.Create(&firstReplyOptionMessage).Error
 	return
 }
 
