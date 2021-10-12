@@ -277,6 +277,7 @@ func (controller Controller) SendChatMessage(ctx *gin.Context) {
 	}
 
 	if chatMessage.MessageType == MessageTypeCustomer {
+
 		// 查询关键词规则
 		keywordRule, err := db.SelectKeywordRuleBySwitch()
 		if err != nil {
@@ -316,6 +317,25 @@ func (controller Controller) SendChatMessage(ctx *gin.Context) {
 				return
 			}
 			break
+		}
+
+		// 匹配选项消息
+		firstReplyOptionMessage, err := db.SelectFirstReplyOptionMessage()
+		for _, val := range firstReplyOptionMessage {
+			if val.Option == SendChatMessageParams.Message {
+				autoChatMessage := new(model.ChatMessage)
+				autoChatMessage.IP = chatMessage.IP
+				autoChatMessage.Message = val.Content
+				autoChatMessage.MessageType = MessageTypeOption
+				// 保存聊天消息
+				err = db.CreateChatMessage(autoChatMessage)
+				if err != nil {
+					JSONFail(ctx, OperationDBError, fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+					log.Println(fmt.Sprintf(`%s: %s`, OperationDBErrMessage, err.Error()))
+					return
+				}
+				break
+			}
 		}
 	}
 
